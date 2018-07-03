@@ -19,6 +19,7 @@ let _perPage
 let _concurrentRequests
 let _excludedRoutes
 let _normalizer
+let _downloadMedia = true
 
 exports.sourceNodes = async (
   { boundActionCreators, getNode, store, cache, createNodeId },
@@ -32,6 +33,7 @@ exports.sourceNodes = async (
     perPage = 100,
     searchAndReplaceContentUrls = {},
     concurrentRequests = 10,
+    downloadMedia = true,
     excludedRoutes = [],
     normalizer,
   }
@@ -44,6 +46,7 @@ exports.sourceNodes = async (
   _auth = auth
   _perPage = perPage
   _concurrentRequests = concurrentRequests
+  _downloadMedia = downloadMedia
   _excludedRoutes = excludedRoutes
   _normalizer = normalizer
 
@@ -96,15 +99,17 @@ exports.sourceNodes = async (
   // Creates links from entities to media nodes
   entities = normalize.mapEntitiesToMedia(entities)
 
-  // Downloads media files and removes "sizes" data as useless in Gatsby context.
-  entities = await normalize.downloadMediaFiles({
-    entities,
-    store,
-    cache,
-    createNode,
-    touchNode,
-    _auth,
-  })
+  if (_downloadMedia) {
+    // Downloads media files and removes "sizes" data as useless in Gatsby context.
+    entities = await normalize.downloadMediaFiles({
+      entities,
+      store,
+      cache,
+      createNode,
+      touchNode,
+      _auth,
+    })
+  }
 
   // Creates links between elements and parent element.
   entities = normalize.mapElementsToParent(entities)

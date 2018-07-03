@@ -101,6 +101,9 @@ plugins: [
       normalizer: function({ entities }) {
         return entities;
       },
+      // Download all images for the blog
+      // If no image processing happens locally, this can be turned off to save time and memory during build
+      downloadMedia: true
     },
   },
 ];
